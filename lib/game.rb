@@ -17,6 +17,13 @@ class Game
     @winner = nil
   end
 
+  def start_game
+    2.times { register_player }
+    determine_starting_player
+    render_game
+    play_game
+  end
+
   def register_player
     puts "Enter player name"
     @players.push(Player.new(gets.chomp))
@@ -100,10 +107,39 @@ class Game
   def get_player_move
     loop do
       user_input = gets.chomp
-      verified_number = user_input.to_i if user_input.match?(/^[0-7]$/)
+      verified_number = verify_input(user_input.to_i) if user_input.match?(/^[0-7]$/)
       return verified_number if verified_number
 
       puts "Input error! Please enter a non-full column number (0-6)"
     end
+  end
+
+  def verify_input(input)
+    input if @moves[input].length <= 5
+  end
+
+  def take_turn(player)
+    move = get_player_move
+    @moves[move].push(player.color)
+    player.turns_taken += 1
+  end
+  
+  def play_game
+    until @winner
+      prompt = ", choose a column. (Columns are numbered 0-6, left to right)"
+      if @player1.turns_taken == @player2.turns_taken
+        puts @player1.name + prompt
+        take_turn(@player1)
+      else
+        puts @player2.name + prompt
+        take_turn(@player2)
+      end
+      check_for_win
+    end
+    puts "#{@winner.name} wins!"
+  end
+
+  def render_game
+    @game_ui.render_game(@moves)
   end
 end

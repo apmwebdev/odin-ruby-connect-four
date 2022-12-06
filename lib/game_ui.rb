@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
 class GameUI
-  # do stuff
+  def render_board(moves)
+    # do stuff
+  end
 end

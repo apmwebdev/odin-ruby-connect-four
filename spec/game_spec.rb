@@ -128,6 +128,36 @@ describe Game do
     end
   end
 
+  describe "#verify_input" do
+    subject(:verify_inp) { described_class.new }
+
+    context "when input is valid" do
+      before do
+        valid_inp = "3"
+        allow(verify_inp).to receive(:gets).and_return(valid_inp)
+      end
+      it "returns input as integer" do
+        moves = Array.new(7) { [] }
+        verify_inp.moves = moves
+        expect(verify_inp.get_player_move).to eq(3)
+      end
+    end
+
+    context "when input is not valid" do
+      before do
+        letter = "a"
+        valid = "3"
+        allow(verify_inp).to receive(:gets).and_return(letter, valid)
+      end
+      it "returns error once" do
+        moves = Array.new(7) { [] }
+        verify_inp.moves = moves
+        expect(verify_inp).to receive(:puts).with("Input error! Please enter a non-full column number (0-6)").once
+        verify_inp.get_player_move
+      end
+    end
+  end
+
   describe "#get_player_move" do
     context "when a valid move is submitted" do
       before do
@@ -160,23 +190,40 @@ describe Game do
   end
 
   describe "#take_turn" do
+    subject(:turn_game) { described_class.new }
+
     context "when a valid move is submitted" do
-      xit "adds the move to the @moves array" do
+      before do
+        move = "3"
+        allow(turn_game).to receive(:gets).and_return(move)
       end
 
-      xit "increases the player's turns_taken by 1" do
+      it "adds the move to the @moves array" do
+        add_players(turn_game)
+        player = turn_game.player1
+        turn_game.take_turn(player)
+        expect(turn_game.moves[3][0]).to eq(player.color)
+      end
+
+      it "increases the player's turns_taken by 1" do
+        add_players(turn_game)
+        player = turn_game.player1
+        turn_game.take_turn(player)
+        expect(turn_game.player1.turns_taken).to eq(1)
       end
     end
 
-    context "when an invalid move then a valid move is submitted" do
-      xit "throws an error once" do
-      end
-    end
   end
 
   describe "#play_game" do
+    subject(:won_game) { described_class.new }
+
     context "when there's a winner" do
-      xit "displays a message showing the winner" do
+      it "displays a message showing the winner" do
+        add_players(won_game)
+        won_game.winner = won_game.player1
+        expect(won_game).to receive(:puts).with("#{won_game.winner.name} wins!")
+        won_game.play_game
       end
     end
   end
