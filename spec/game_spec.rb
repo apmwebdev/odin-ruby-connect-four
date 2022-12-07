@@ -20,7 +20,8 @@ describe Game do
       end
 
       it "increases length of @players by 1" do
-        expect { reg_game.register_player }.to change { reg_game.players.length }.by(1)
+        expect { reg_game.register_player }
+          .to change { reg_game.players.length }.by(1)
       end
 
       it "makes the last item in @players be a Player" do
@@ -51,28 +52,28 @@ describe Game do
       expect(@starting_player_game.player1.color).to eq("red")
     end
 
-    it "assigns @player2 the color black" do
-      expect(@starting_player_game.player2.color).to eq("black")
+    it "assigns @player2 the color blue" do
+      expect(@starting_player_game.player2.color).to eq("blue")
     end
   end
 
   describe "#check_for_win" do
     context "when there is a set of winning moves" do
-      subject(:player1_wins) { described_class.new }
+      subject(:game) { described_class.new }
       it "makes @player1 the winner if the winning sequence is red" do
-        add_players(player1_wins)
-        player1_win_moves = Array.new(7) { [] }
-        4.times { player1_win_moves[0].push("red") }
-        player1_wins.moves = player1_win_moves
-        player1_wins.check_for_win
-        expect(player1_wins.winner).to eq(player1_wins.player1)
+        add_players(game)
+        moves = Array.new(7) { [] }
+        4.times { moves[0].push("red") }
+        game.moves = moves
+        game.check_for_win
+        expect(game.winner).to eq(game.player1)
       end
 
       subject(:player2_wins) { described_class.new }
-      it "makes @player2 the winner if the winning sequence is black" do
+      it "makes @player2 the winner if the winning sequence is blue" do
         add_players(player2_wins)
         player2_win_moves = Array.new(7) { [] }
-        4.times { player2_win_moves[0].push("black") }
+        4.times { player2_win_moves[0].push("blue") }
         player2_wins.moves = player2_win_moves
         player2_wins.check_for_win
         expect(player2_wins.winner).to eq(player2_wins.player2)
@@ -82,10 +83,10 @@ describe Game do
       it "properly evaluates horizontal wins" do
         add_players(horizontal_win)
         moves = Array.new(7) { [] }
-        moves[0].push("red", "black")
-        moves[1].push("black", "black")
-        moves[2].push("red", "black")
-        moves[3].push("red", "black")
+        moves[0].push("red", "blue")
+        moves[1].push("blue", "blue")
+        moves[2].push("red", "blue")
+        moves[3].push("red", "blue")
         horizontal_win.moves = moves
         horizontal_win.check_for_win
         expect(horizontal_win.winner).to eq(horizontal_win.player2)
@@ -96,9 +97,9 @@ describe Game do
         add_players(diag_up_win)
         moves = Array.new(7) { [] }
         moves[0].push("red")
-        moves[1].push("black", "red")
-        moves[2].push("red", "black", "red")
-        moves[3].push("red", "black", "black", "red")
+        moves[1].push("blue", "red")
+        moves[2].push("red", "blue", "red")
+        moves[3].push("red", "blue", "blue", "red")
         diag_up_win.moves = moves
         diag_up_win.check_for_win
         expect(diag_up_win.winner).to eq(diag_up_win.player1)
@@ -108,9 +109,9 @@ describe Game do
       it "properly evaluates down diagonal wins" do
         add_players(diag_down_win)
         moves = Array.new(7) { [] }
-        moves[0].push("red", "black", "black", "red")
-        moves[1].push("red", "black", "red")
-        moves[2].push("black", "red")
+        moves[0].push("red", "blue", "blue", "red")
+        moves[1].push("red", "blue", "red")
+        moves[2].push("blue", "red")
         moves[3].push("red")
         diag_down_win.moves = moves
         diag_down_win.check_for_win
@@ -136,10 +137,10 @@ describe Game do
         valid_inp = "3"
         allow(verify_inp).to receive(:gets).and_return(valid_inp)
       end
-      it "returns input as integer" do
+      it "returns input - 1 as integer" do
         moves = Array.new(7) { [] }
         verify_inp.moves = moves
-        expect(verify_inp.get_player_move).to eq(3)
+        expect(verify_inp.get_player_move).to eq(2)
       end
     end
 
@@ -152,7 +153,10 @@ describe Game do
       it "returns error once" do
         moves = Array.new(7) { [] }
         verify_inp.moves = moves
-        expect(verify_inp).to receive(:puts).with("Input error! Please enter a non-full column number (0-6)").once
+        expect(verify_inp)
+          .to receive(:puts)
+                .with("Input error! Please enter a non-full column number (0-6)")
+                .once
         verify_inp.get_player_move
       end
     end
@@ -168,7 +172,7 @@ describe Game do
       it "returns that move" do
         col_selection = "3"
         allow(@move_game).to receive(:gets).and_return(col_selection)
-        expect(@move_game.get_player_move).to eq(col_selection.to_i)
+        expect(@move_game.get_player_move).to eq(col_selection.to_i - 1)
       end
     end
 
@@ -202,7 +206,7 @@ describe Game do
         add_players(turn_game)
         player = turn_game.player1
         turn_game.take_turn(player)
-        expect(turn_game.moves[3][0]).to eq(player.color)
+        expect(turn_game.moves[2][0]).to eq(player.color)
       end
 
       it "increases the player's turns_taken by 1" do
