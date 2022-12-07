@@ -57,7 +57,7 @@ class Game
 
   def show_turn_instructions(player)
     return_str = "'s turn: Choose a column (numbered 1 to 7)"
-    "\n" + player.piece + " " + player.name + return_str
+    "\n#{player.piece} #{player.name}#{return_str}"
   end
 
   def take_turn(player)
